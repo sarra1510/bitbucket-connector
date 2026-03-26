@@ -164,15 +164,82 @@ npm install axios dotenv
 
 ---
 
-## 9. Évolutions prévues (v2.0)
+## 9. Architecture v2.0 — Monorepo
+
+### Structure
+
+```
+bitbucket-connector/
+├── packages/
+│   ├── core/                    # 🔧 Module partagé
+│   │   ├── src/
+│   │   │   ├── client.ts        # BitbucketClient class
+│   │   │   ├── types.ts         # Interfaces TypeScript
+│   │   │   └── index.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   ├── vscode-extension/        # 🧩 Extension VS Code
+│   │   ├── src/
+│   │   │   ├── extension.ts     # Point d'entrée
+│   │   │   ├── treeView.ts      # Explorateur Bitbucket (TreeView)
+│   │   │   ├── fileViewer.ts    # Ouvrir les fichiers
+│   │   │   └── commands.ts      # Commandes VS Code
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── copilot-extension/       # 🤖 Copilot Agent
+│       ├── src/
+│       │   ├── agent.ts         # Handler Copilot
+│       │   ├── skills.ts        # Skills Bitbucket
+│       │   └── server.ts        # Serveur HTTP (SSE streaming)
+│       ├── package.json
+│       └── tsconfig.json
+├── connect_bitbucket.js         # Script CLI original (inchangé)
+└── package.json                 # Monorepo root (npm workspaces)
+```
+
+### Module Core (`@bitbucket-connector/core`)
+
+**BitbucketClient** — classe TypeScript réutilisable :
+
+| Méthode | Description |
+|---|---|
+| `getRepoInfo()` | Informations du repository |
+| `getBranches(limit)` | Liste des branches |
+| `browse(path, branch)` | Exploration d'un dossier |
+| `readFile(filePath, branch)` | Lecture avec pagination |
+| `getCommits(limit, branch)` | Liste des commits |
+| `getPullRequests(state, limit)` | Liste des pull requests |
+| `searchFiles(query, path)` | Recherche de fichiers par nom |
+
+### Extension VS Code
+
+| Composant | Description |
+|---|---|
+| `BitbucketTreeProvider` | Implémente `TreeDataProvider` — panneau latéral |
+| `FileViewerProvider` | Implémente `TextDocumentContentProvider` — schéma `bitbucket:` |
+| Commandes | connect, refresh, openFile, switchBranch, searchFiles |
+| Settings | baseUrl, user, project, repo via VS Code settings |
+| Token | Stocké dans `context.secrets` (SecretStorage) |
+
+### Copilot Extension (Agent)
+
+**Serveur HTTP** sur le port 3000 (configurable via `PORT`) :
+- `GET /` — health check
+- `POST /agent` — endpoint Copilot avec SSE streaming
+
+**Agent NLP** — parsing naturel français/anglais :
+- connexion/status, branches, browse, read file
+- commits (avec limite et branche), pull requests (avec état)
+- recherche de fichiers, aide
+
+### Évolutions v2.0
 
 - [x] Lire le contenu d'un fichier
-- [ ] Lister les Pull Requests
-- [ ] Lister les commits
-- [ ] Rechercher dans le code
-- [ ] Créer des branches
-- [ ] Explorer plusieurs repos du projet IM
-- [ ] Interface CLI interactive
+- [x] Lister les Pull Requests
+- [x] Lister les commits
+- [x] Rechercher dans le code
+- [x] Extension VS Code avec TreeView
+- [x] Agent GitHub Copilot (chat naturel)
 
 ---
 

@@ -1,0 +1,116 @@
+{
+  "name": "bitbucket-connector-vscode",
+  "displayName": "Bitbucket Server Connector",
+  "description": "Explore Bitbucket Server repositories directly in VS Code",
+  "version": "1.0.0",
+  "publisher": "bitbucket-connector",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onView:bitbucketExplorer"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "bitbucket-explorer",
+          "title": "Bitbucket Server",
+          "icon": "$(source-control)"
+        }
+      ]
+    },
+    "views": {
+      "bitbucket-explorer": [
+        {
+          "id": "bitbucketExplorer",
+          "name": "Bitbucket Explorer"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "bitbucket.connect",
+        "title": "Connect to Bitbucket",
+        "category": "Bitbucket"
+      },
+      {
+        "command": "bitbucket.refresh",
+        "title": "Refresh",
+        "category": "Bitbucket",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "bitbucket.openFile",
+        "title": "Open File",
+        "category": "Bitbucket"
+      },
+      {
+        "command": "bitbucket.switchBranch",
+        "title": "Switch Branch",
+        "category": "Bitbucket",
+        "icon": "$(git-branch)"
+      },
+      {
+        "command": "bitbucket.searchFiles",
+        "title": "Search Files",
+        "category": "Bitbucket",
+        "icon": "$(search)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "bitbucket.refresh",
+          "when": "view == bitbucketExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "bitbucket.switchBranch",
+          "when": "view == bitbucketExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "bitbucket.searchFiles",
+          "when": "view == bitbucketExplorer",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Bitbucket Connector",
+      "properties": {
+        "bitbucketConnector.baseUrl": {
+          "type": "string",
+          "description": "Bitbucket Server base URL (e.g. https://bitbucket.my-nx.com)"
+        },
+        "bitbucketConnector.user": {
+          "type": "string",
+          "description": "Bitbucket username"
+        },
+        "bitbucketConnector.project": {
+          "type": "string",
+          "description": "Bitbucket project key"
+        },
+        "bitbucketConnector.repo": {
+          "type": "string",
+          "description": "Bitbucket repository slug"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@bitbucket-connector/core": "1.0.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}
