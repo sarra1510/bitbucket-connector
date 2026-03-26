@@ -32,7 +32,14 @@ BB_REPO=nom-du-repo
 ## 🚀 Utilisation
 
 ```bash
+# Mode normal (connexion + exploration)
 node connect_bitbucket.js
+
+# Lire un fichier spécifique
+node connect_bitbucket.js read chemin/vers/fichier.js
+
+# Lire un fichier sur une branche spécifique
+node connect_bitbucket.js read chemin/vers/fichier.js develop
 ```
 
 ## 📋 Documentation
