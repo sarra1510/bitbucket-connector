@@ -76,6 +76,7 @@ Base URL : `{BB_BASE_URL}/rest/api/1.0`
 | `/projects/{key}/repos/{slug}/branches` | GET | Liste des branches |
 | `/projects/{key}/repos/{slug}/files/{path}` | GET | Liste des fichiers dans un dossier |
 | `/projects/{key}/repos/{slug}/browse/{path}` | GET | Parcourir le contenu d'un dossier |
+| `/projects/{key}/repos/{slug}/browse/{path}` | GET | Récupérer le contenu d'un fichier (avec pagination des lignes) |
 
 ### Paramètres de requête
 
@@ -101,6 +102,26 @@ Base URL : `{BB_BASE_URL}/rest/api/1.0`
 - Parcourt l'arborescence du repository
 - Distingue les dossiers (📁) des fichiers (📄)
 - Affiche la taille des fichiers
+
+### 5.4 Lecture du contenu d'un fichier
+- Endpoint : `GET /projects/{key}/repos/{slug}/browse/{path}?at=refs/heads/{branch}`
+- Gère la pagination : boucle avec les paramètres `start` et `isLastPage` jusqu'à récupérer toutes les lignes
+- Affiche le chemin du fichier, la branche utilisée et la taille en bytes
+- Affiche le contenu ligne par ligne avec numéros de ligne
+- Gère les erreurs (fichier non trouvé HTTP 404, erreur d'accès, etc.)
+
+**Exemples d'utilisation CLI :**
+
+```bash
+# Lire un fichier sur la branche par défaut
+node connect_bitbucket.js read README.md
+
+# Lire un fichier sur une branche spécifique
+node connect_bitbucket.js read packages/some-package/package.json master
+
+# Lire un fichier sur la branche develop
+node connect_bitbucket.js read packages/some-package/README.md develop
+```
 
 ---
 
@@ -145,7 +166,7 @@ npm install axios dotenv
 
 ## 9. Évolutions prévues (v2.0)
 
-- [ ] Lire le contenu d'un fichier
+- [x] Lire le contenu d'un fichier
 - [ ] Lister les Pull Requests
 - [ ] Lister les commits
 - [ ] Rechercher dans le code

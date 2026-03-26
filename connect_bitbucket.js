@@ -88,8 +88,71 @@ async function listerDossiers(path = "packages") {
   }
 }
 
+async function lireContenuFichier(filePath, branch) {
+  try {
+    const branchLabel = branch || "branche par défaut";
+    console.log(`\n📄 Contenu de : ${filePath} (${branchLabel})`);
+    console.log("─".repeat(50));
+
+    let start = 0;
+    let isLastPage = false;
+    let lineNumber = 1;
+    let totalLines = 0;
+    let size = null;
+
+    while (!isLastPage) {
+      const atParam = branch ? `&at=refs/heads/${encodeURIComponent(branch)}` : "";
+      const url = `${API}/projects/${BB_PROJECT}/repos/${BB_REPO}/browse/${filePath}?limit=500&start=${start}${atParam}`;
+      const res = await axios.get(url, authConfig);
+
+      if (size === null && res.data.size !== undefined) {
+        size = res.data.size;
+        console.log(`   Taille : ${size} bytes\n`);
+      }
+
+      const lines = res.data.lines || [];
+      lines.forEach((line) => {
+        console.log(`  ${String(lineNumber).padStart(4, " ")} │ ${line.text}`);
+        lineNumber++;
+      });
+
+      totalLines += lines.length;
+      isLastPage = res.data.isLastPage;
+      start = res.data.nextPageStart !== undefined ? res.data.nextPageStart : start + lines.length;
+
+      if (lines.length === 0) break;
+    }
+
+    console.log("\n" + "─".repeat(50));
+    console.log(`   ${totalLines} ligne(s) affichée(s)`);
+  } catch (error) {
+    const status = error.response?.status;
+    const message = error.response?.data?.errors?.[0]?.message || error.message;
+    if (status === 404) {
+      console.error(`❌ Fichier non trouvé : ${filePath}`);
+    } else {
+      console.error(`❌ Erreur lecture fichier (HTTP ${status}) : ${message}`);
+    }
+  }
+}
+
 // --- Exécution ---
 async function main() {
+  const args = process.argv.slice(2);
+
+  // Mode CLI : node connect_bitbucket.js read <path> [branch]
+  if (args[0] === "read") {
+    const filePath = args[1];
+    const branch = args[2];
+    if (!filePath) {
+      console.error("❌ Usage : node connect_bitbucket.js read <chemin/fichier> [branche]");
+      process.exit(1);
+    }
+    await lireContenuFichier(filePath, branch);
+    return;
+  }
+
+  // Mode normal
   console.log(`🔗 Bitbucket Server: ${BB_BASE_URL}`);
   console.log(`   Projet: ${BB_PROJECT} | Repo: ${BB_REPO}`);
   console.log("─".repeat(50));
@@ -98,6 +161,7 @@ async function main() {
   if (connected) {
     await listerBranches();
     await listerDossiers("packages");
+    await lireContenuFichier("README.md");
   }
 
   console.log("\n" + "─".repeat(50));
