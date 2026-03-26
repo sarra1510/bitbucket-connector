@@ -1,0 +1,16 @@
+{
+  "name": "bitbucket-connector",
+  "version": "1.0.0",
+  "description": "🔗 Connecteur Node.js pour Bitbucket Server (Data Center)",
+  "main": "connect_bitbucket.js",
+  "scripts": {
+    "start": "node connect_bitbucket.js"
+  },
+  "keywords": ["bitbucket", "connector", "api", "nodejs"],
+  "author": "sarra.dhaha (@sarra1510)",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0"
+  }
+}
