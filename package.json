@@ -1,10 +1,17 @@
 {
   "name": "bitbucket-connector",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "🔗 Connecteur Node.js pour Bitbucket Server (Data Center)",
+  "private": true,
   "main": "connect_bitbucket.js",
+  "workspaces": ["packages/*"],
   "scripts": {
-    "start": "node connect_bitbucket.js"
+    "start": "node connect_bitbucket.js",
+    "build": "npm run build --workspaces",
+    "build:core": "npm run build -w packages/core",
+    "build:vscode": "npm run build -w packages/vscode-extension",
+    "build:copilot": "npm run build -w packages/copilot-extension",
+    "start:copilot": "npm run start -w packages/copilot-extension"
   },
   "keywords": ["bitbucket", "connector", "api", "nodejs"],
   "author": "sarra.dhaha (@sarra1510)",

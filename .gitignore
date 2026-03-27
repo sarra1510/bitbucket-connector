@@ -4,6 +4,12 @@
 # Dependencies
 node_modules/
 
+# Build output
+dist/
+
+# VS Code Extension package
+*.vsix
+
 # Logs
 *.log
 
